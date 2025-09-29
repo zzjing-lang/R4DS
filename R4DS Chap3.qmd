@@ -1,0 +1,155 @@
+---
+title: "Class 11 - Sep 26"
+format: 
+   html:
+      embed-resources: true
+editor: visual
+---
+
+## Assignments due on Monday
+
+1.  please submit github URL for the buoy reading assignment
+
+2.  Exercises from R4DS\
+    a - 3.2.5: 1,4,5\
+    b - 3.3.5: 1,4\
+    c - 3.5.7: 1,2,4,6
+
+## Cheat Sheets
+
+[dplyr](https://dplyr.tidyverse.org/)
+
+[tidyr](https://tidyr.tidyverse.org/)
+
+[stringr](https://stringr.tidyverse.org/)
+
+### using a cheatsheet
+
+Examples from dplyr
+
+## R4DS Chapter 3
+
+```{r}
+#| label: R4DS_ch_3-1
+#| warning: true
+#| message: true
+
+library(nycflights13)
+library(tidyverse)
+
+flights_here <- flights
+
+```
+
+### Rows - Manipulate Cases
+
+filter() arrange() distinct()
+
+```{r}
+#| label: rows
+#| warning: false
+#| message: false
+
+flights |> filter(dep_delay > 120)
+
+delay_120 <- flights_here |> filter(dep_delay > 120)
+
+library(magrittr) 
+
+flights_here %<>% filter(dep_delay > 120)
+
+delay_order <- flights_here |> arrange(dep_delay)
+
+
+```
+
+### Columns -- Manipulate Variables
+
+select() mutate()
+
+```{r}
+#| label: columns
+
+ flights |> select(year, month, day)
+ 
+ m1 <- flights |> 
+     mutate(
+      gain = dep_delay - arr_delay,
+      speed = distance / air_time * 60
+      )
+
+```
+
+### Summarize and groups
+
+```{r}
+#| label: groups
+
+flights |> 
+   group_by(month)
+
+flights |> 
+   group_by(month) |>
+   summarise(
+    avg_delay = mean(dep_delay, na.rm = TRUE)
+   )
+
+```
+
+```{r}
+# R4DS Chapter 3 Exercises
+# 3.2.5: 1, 4, 5b
+# 3.3.5: 1, 4c
+# 3.5.7: 1, 2, 4, 6
+
+install.packages("tidyverse")
+install.packages("nycflights13")
+
+library(tidyverse)
+library(nycflights13)
+
+# 3.2.5 
+delay_over_2h <- flights %>%
+  filter(dep_delay > 120)
+
+# 3.2.5 
+jan_mar <- flights %>%
+  filter(month %in% 1:3)
+
+# 3.2.5 
+jan_mar_delay <- flights %>%
+  filter(month %in% 1:3, dep_delay > 120)
+
+# 3.3.5 
+worst_delays <- flights %>%
+  arrange(desc(dep_delay)) %>%
+  head(10)
+
+# 3.3.5 
+longest_flights <- flights %>%
+  arrange(desc(distance)) %>%
+  head(10)
+
+# 3.5.7 
+monthly_delay <- flights %>%
+  group_by(month) %>%
+  summarise(avg_dep_delay = mean(dep_delay, na.rm = TRUE))
+
+# 3.5.7 
+worst_month <- monthly_delay %>%
+  arrange(desc(avg_dep_delay)) %>%
+  head(1)
+
+# 3.5.7 
+dest_speed <- flights %>%
+  filter(!is.na(air_time), air_time > 0) %>%
+  group_by(dest) %>%
+  summarise(avg_speed = mean(distance / air_time * 60, na.rm = TRUE)) %>%
+  arrange(desc(avg_speed))
+
+# 3.5.7 
+carrier_delay <- flights %>%
+  group_by(carrier) %>%
+  summarise(avg_dep_delay = mean(dep_delay, na.rm = TRUE)) %>%
+  arrange(desc(avg_dep_delay))
+```
